@@ -8,10 +8,10 @@
 (define-tokens stack
 	[IDENTIFIER NUMBER PRIMOP])
 (define-empty-tokens stack*
-	[OPEN-BRACE CLOSE-BRACE OPEN-PAREN CLOSE-PAREN EOF])
+	[OPEN-BRACE CLOSE-BRACE OPEN-PAREN CLOSE-PAREN WHITESPACE EOF])
 
 (define-lex-abbrevs
-	[space (:& (:~ #\newline) (:or whitespace blank))]
+	[space (:or #\newline whitespace blank)]
 	[identifier (:: alphabetic (:* (:or alphabetic numeric)))])
 
 (define stack-lexer
@@ -22,7 +22,7 @@
 		[#\) (token-CLOSE-PAREN)]
 		[identifier (token-IDENTIFIER lexeme)]
 		[numeric (token-NUMBER lexeme)]
-		[(:+ space) (void)]
+		[(:+ space) (token-WHITESPACE)]
 		[(eof) (token-EOF)]))
 
 (define (flatten-token token)
@@ -32,6 +32,6 @@
 
 (define (stack-lex in)
 	(for/list ([t (in-producer (λ () (stack-lexer in)))]
-						 #:unless (void? (position-token-token t))
-						 #:final (equal? (token-name (flatten-token t)) 'EOF))
+						 #:unless (eq? (token-name (flatten-token t)) 'WHITESPACE)
+						 #:final (eq? (token-name (flatten-token t)) 'EOF))
 		t))

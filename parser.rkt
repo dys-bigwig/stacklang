@@ -43,5 +43,3 @@
 
 (define (stack-parse in [source-name (object-name in)])
 	(parse-tokens program/p (stack-lex in) source-name))
-
-(stack-parse (open-input-string "[ 1 plus ]"))
