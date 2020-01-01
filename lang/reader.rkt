@@ -7,11 +7,11 @@ stack/language
 
 (require "parser.rkt"
 				 "lexer.rkt"
-				 megaparsack
-				 racket)
+				 megaparsack)
 
 (define (stack-read-syntax module-name in)
-	(parse-result! (stack-parse in)))
+	(define src-datums (parse-result! (stack-parse in)))
+	(datum->syntax #f `(compose ,@(reverse src-datums))))
 
 (define (stack-read in)
-  (syntax->datum (stack-read-syntax in #f)))
+  (syntax->datum (stack-read-syntax #f in)))
