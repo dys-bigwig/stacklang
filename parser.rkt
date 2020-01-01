@@ -15,11 +15,11 @@
 		[else `(,(string->symbol name) ,e)]))
 
 (define identifier/p
-  (do [id <- (label/p "identifier" (token/p 'IDENTIFIER))]
+  (do [id <- (token/p 'IDENTIFIER)]
       (pure (wrap "identifier" id))))
 
 (define number/p
-  (do [n <- (label/p "number" ((pure string->number) (token/p 'NUMBER)))]
+  (do [n <- ((pure string->number) (token/p 'NUMBER))]
       (pure (wrap "number" n))))
 
 (define eof/p
@@ -28,9 +28,9 @@
 (define quotation/p
 	(do
 		(token/p 'OPEN-BRACE)
-		[exprs <- (label/p "quotation" (many/p expr/p))]
+		[exprs <- (many/p expr/p)]
 		(token/p 'CLOSE-BRACE)
-		(pure exprs)))
+		(pure `(quotation ,@exprs))))
 
 (define expr/p
 	(syntax/p (or/p quotation/p identifier/p number/p)))
@@ -43,3 +43,5 @@
 
 (define (stack-parse in [source-name (object-name in)])
 	(parse-tokens program/p (stack-lex in) source-name))
+
+(stack-parse (open-input-string "[ 1 plus ]"))
