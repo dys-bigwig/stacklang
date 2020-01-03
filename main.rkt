@@ -16,7 +16,11 @@
 				 cur)
 
 (define (stack-compose . fs)
-	(foldl compose identity fs))
+	(define (to-fn x)
+		(match x
+			[(? procedure?) x]
+			[_ (push x)]))
+	(foldl compose identity (map to-fn fs)))
 
 (define (push x) (λ (s) (cons x s)))
 
@@ -29,15 +33,16 @@
 
 (define-syntax (number stx)
 	(syntax-case stx ()
-		[(_ n) #'(λ (s) (cons n s))]))
+		[(_ n) #'n]))
 
 (define-syntax (identifier stx)
 	(syntax-case stx ()
-		[(_ id) #'(λ (s) (id s))]))
+		[(_ id) #'id]))
 
 (define-syntax (quotation stx)
 	(syntax-case stx ()
-		[(quotation #s(quoted es) ...) #'(push (stack-compose es ...))]))
+		[(quotation es ...)
+		 #'(push (stack-compose es ...))]))
 
 (define unq
 	(λ (s) ((car s) (drop s 1))))
@@ -50,8 +55,5 @@
 	(λ (s)
 		 (define qfs (car s))
 		 (define v (cadr s))
-		 (define nq (stack-compose
-									(cond [(procedure? v) v]
-												[else (push v)])
-									qfs))
+		 (define nq (stack-compose v qfs))
 		 (cons nq (drop s 2))))
