@@ -11,7 +11,9 @@
 				 quotation
 				 plus
 				 identifier
-				 unq)
+				 unq
+				 dot
+				 cur)
 
 (define (stack-compose . fs)
 	(foldl compose identity fs))
@@ -21,11 +23,9 @@
 (define plus (λ (s) (cons (rack+ (first s) (second s))
 													(drop s 2))))
 
-(define primops (hash 'plus +))
-
 (define-syntax-rule (stack-module-begin body ...)
   (#%plain-module-begin
-	 	(display ((stack-compose body ...) empty))))
+	 	((stack-compose body ...) empty)))
 
 (define-syntax (number stx)
 	(syntax-case stx ()
@@ -40,5 +40,18 @@
 		[(quotation #s(quoted es) ...) #'(push (stack-compose es ...))]))
 
 (define unq
+	(λ (s) ((car s) (drop s 1))))
+
+(define dot
+	(λ (s) (begin (display (car s)))
+		 		 (cdr s)))
+
+(define cur
 	(λ (s)
-		 ((car s) (drop s 1))))
+		 (define qfs (car s))
+		 (define v (cadr s))
+		 (define nq (stack-compose
+									(cond [(procedure? v) v]
+												[else (push v)])
+									qfs))
+		 (cons nq (drop s 2))))

@@ -1,5 +1,7 @@
 #lang stack
 1
-<1 <plus>>
+1
+<plus>
+cur
 unq
-unq
+dot
