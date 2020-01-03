@@ -1,5 +1,4 @@
-#lang s-exp syntax/module-reader
-stack/language
+#lang s-exp syntax/module-reader stack
 
 #:read stack-read
 #:read-syntax stack-read-syntax
@@ -11,7 +10,7 @@ stack/language
 
 (define (stack-read-syntax module-name in)
 	(define src-datums (parse-result! (stack-parse in)))
-	(datum->syntax #f `(compose ,@(reverse src-datums))))
+	(datum->syntax #f src-datums))
 
 (define (stack-read in)
   (syntax->datum (stack-read-syntax #f in)))

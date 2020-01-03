@@ -6,9 +6,9 @@
 (provide stack-lex)
 
 (define-tokens stack
-	[IDENTIFIER NUMBER PRIMOP])
+	[IDENTIFIER NUMBER])
 (define-empty-tokens stack*
-	[OPEN-BRACE CLOSE-BRACE OPEN-PAREN CLOSE-PAREN WHITESPACE EOF])
+	[OPEN-BRACE CLOSE-BRACE OPEN-PAREN CLOSE-PAREN WHITESPACE EOF ]) 
 
 (define-lex-abbrevs
 	[space (:or #\newline whitespace blank)]
@@ -16,8 +16,8 @@
 
 (define stack-lexer
 	(lexer-src-pos
-		[#\[ (token-OPEN-BRACE)]
-		[#\] (token-CLOSE-BRACE)]
+		[#\< (token-OPEN-BRACE)]
+		[#\> (token-CLOSE-BRACE)]
 		[#\( (token-OPEN-PAREN)]
 		[#\) (token-CLOSE-PAREN)]
 		[identifier (token-IDENTIFIER lexeme)]

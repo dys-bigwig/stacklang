@@ -9,18 +9,13 @@
 
 (provide stack-parse)
 
-(define (wrap name e)
-	(cond
-		[(list? e) `(,(string->symbol name) ,@e)]
-		[else `(,(string->symbol name) ,e)]))
-
 (define identifier/p
-  (do [id <- (token/p 'IDENTIFIER)]
-      (pure (wrap "identifier" id))))
+  (do [id <- ((pure string->symbol) (token/p 'IDENTIFIER))]
+      (pure `(identifier ,id))))
 
 (define number/p
   (do [n <- ((pure string->number) (token/p 'NUMBER))]
-      (pure (wrap "number" n))))
+      (pure `(number ,n))))
 
 (define eof/p
 	(token/p 'EOF))
@@ -30,7 +25,7 @@
 		(token/p 'OPEN-BRACE)
 		[exprs <- (many/p expr/p)]
 		(token/p 'CLOSE-BRACE)
-		(pure `(quotation ,@exprs))))
+		(pure `(quotation ,exprs))))
 
 (define expr/p
 	(syntax/p (or/p quotation/p identifier/p number/p)))
@@ -43,3 +38,6 @@
 
 (define (stack-parse in [source-name (object-name in)])
 	(parse-tokens program/p (stack-lex in) source-name))
+
+(define (test str)
+	(parse-result! (stack-parse (open-input-string str))))
