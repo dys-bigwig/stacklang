@@ -10,7 +10,8 @@
 				 number
 				 quotation
 				 plus
-				 identifier)
+				 identifier
+				 unq)
 
 (define (stack-compose . fs)
 	(foldl compose identity fs))
@@ -36,4 +37,8 @@
 
 (define-syntax (quotation stx)
 	(syntax-case stx ()
-		[(_ . es) #'(push (stack-compose es))]))
+		[(quotation #s(quoted es) ...) #'(push (stack-compose es ...))]))
+
+(define unq
+	(λ (s)
+		 ((car s) (drop s 1))))
