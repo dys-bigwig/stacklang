@@ -9,6 +9,8 @@
 
 (provide stack-parse)
 
+(struct quoted (es) #:prefab)
+
 (define identifier/p
   (do [id <- ((pure string->symbol) (token/p 'IDENTIFIER))]
       (pure `(identifier ,id))))
@@ -25,7 +27,7 @@
 		(token/p 'OPEN-BRACE)
 		[exprs <- (many/p expr/p)]
 		(token/p 'CLOSE-BRACE)
-		(pure `(quotation ,exprs))))
+		(pure `(quotation ,@(map quoted exprs)))))
 
 (define expr/p
 	(syntax/p (or/p quotation/p identifier/p number/p)))
