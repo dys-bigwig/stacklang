@@ -25,7 +25,7 @@
 (define (push x) (λ (s) (cons x s)))
 
 (define plus (λ (s) (cons (rack+ (first s) (second s))
-													(drop s 2))))
+                          (drop s 2))))
 
 (define-syntax-rule (stack-module-begin body ...)
   (#%plain-module-begin
